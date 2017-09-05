@@ -1,0 +1,35 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Express 2012 for Windows Desktop
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Backtracking", "Backtracking\Backtracking.csproj", "{086BAF8D-C7AB-4759-8E7C-AE4DFD754FE1}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{EF1CF1ED-8A42-4D81-B140-B15FB08FFB93}"
+EndProject
+Global
+	GlobalSection(TestCaseManagementSettings) = postSolution
+		CategoryFile = Backtracking.vsmdi
+	EndGlobalSection
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Debug|Mixed Platforms = Debug|Mixed Platforms
+		Debug|x86 = Debug|x86
+		Release|Any CPU = Release|Any CPU
+		Release|Mixed Platforms = Release|Mixed Platforms
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{086BAF8D-C7AB-4759-8E7C-AE4DFD754FE1}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{086BAF8D-C7AB-4759-8E7C-AE4DFD754FE1}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
+		{086BAF8D-C7AB-4759-8E7C-AE4DFD754FE1}.Debug|Mixed Platforms.Build.0 = Debug|x86
+		{086BAF8D-C7AB-4759-8E7C-AE4DFD754FE1}.Debug|x86.ActiveCfg = Debug|x86
+		{086BAF8D-C7AB-4759-8E7C-AE4DFD754FE1}.Debug|x86.Build.0 = Debug|x86
+		{086BAF8D-C7AB-4759-8E7C-AE4DFD754FE1}.Release|Any CPU.ActiveCfg = Release|x86
+		{086BAF8D-C7AB-4759-8E7C-AE4DFD754FE1}.Release|Mixed Platforms.ActiveCfg = Release|x86
+		{086BAF8D-C7AB-4759-8E7C-AE4DFD754FE1}.Release|Mixed Platforms.Build.0 = Release|x86
+		{086BAF8D-C7AB-4759-8E7C-AE4DFD754FE1}.Release|x86.ActiveCfg = Release|x86
+		{086BAF8D-C7AB-4759-8E7C-AE4DFD754FE1}.Release|x86.Build.0 = Release|x86
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
