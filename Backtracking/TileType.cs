@@ -1,6 +1,6 @@
 ﻿namespace Backtracking
 {
-    enum TileType
+    public enum TileType
     {
         Edge,
         Goal,

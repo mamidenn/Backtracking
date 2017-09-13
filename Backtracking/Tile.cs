@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Backtracking
 {
-    class Tile
+    public class Tile
     {
         TileType type;
         TileState state;
@@ -50,14 +50,26 @@ namespace Backtracking
             return output;
         }
 
-        internal void RemovePiece()
+        public void RemovePiece()
         {
+            if (!IsPlayable)
+            {
+                throw new TileIsNotPlayableException();
+            }
+            if (!IsOccupied)
+            {
+                throw new TileIsNotOccupiedException();
+            }
             state = TileState.Free;
         }
 
-        internal void AddPiece()
+        public void AddPiece()
         {
-            if (type == TileType.Edge)
+            if (!IsPlayable)
+            {
+                throw new TileIsNotPlayableException();
+            }
+            if (IsOccupied)
             {
                 throw new TileIsOccupiedException();
             }

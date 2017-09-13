@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Backtracking
 {
-    public class TileIsOccupiedException : TileException
+    public class TileException : Exception
     {
     }
 }

@@ -1,6 +1,6 @@
 ﻿namespace Backtracking
 {
-    enum TileState
+    public enum TileState
     {
         Free,
         Occupied
