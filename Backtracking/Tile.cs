@@ -3,36 +3,36 @@ using System.Collections.Generic;
 
 namespace Backtracking
 {
-    class Tile : ICloneable
+    class Tile
     {
-        TileType _type;
-        TileState _state;
+        TileType type;
+        TileState state;
 
-        public bool IsOccupied { get { return IsPlayable && _state == TileState.Occupied; } }
-        public bool IsPlayable { get { return _type == TileType.Normal || _type == TileType.Goal; } }
-        public bool IsGoal { get { return _type == TileType.Goal; } }
+        public bool IsOccupied { get { return IsPlayable && state == TileState.Occupied; } }
+        public bool IsPlayable { get { return type == TileType.Normal || type == TileType.Goal; } }
+        public bool IsGoal { get { return type == TileType.Goal; } }
 
         public Tile(TileType type) : this(type, TileState.Free) { }
 
         public Tile(TileType type, TileState state)
         {
-            _type = type;
-            _state = state;
+            this.type = type;
+            this.state = state;
         }
 
-        public Tile(Tile tile) : this(tile._type, tile._state) { }
+        public Tile(Tile tile) : this(tile.type, tile.state) { }
 
         public override string ToString()
         {
             string output;
-            switch (_type)
+            switch (type)
             {
                 case TileType.Edge:
                     output = "░";
                     break;
                 case TileType.Normal:
                 case TileType.Goal:
-                    switch (_state)
+                    switch (state)
                     {
                         case TileState.Free:
                             output = " ";
@@ -52,21 +52,39 @@ namespace Backtracking
 
         internal void RemovePiece()
         {
-            _state = TileState.Free;
+            state = TileState.Free;
         }
 
         internal void AddPiece()
         {
-            if (_type == TileType.Edge)
+            if (type == TileType.Edge)
             {
-                throw new Exception();
+                throw new TileIsOccupiedException();
             }
-            _state = TileState.Occupied;
+            state = TileState.Occupied;
         }
 
-        public object Clone()
+        public static Tile Parse(char tileCode)
         {
-            return new Tile(_type, _state);
+            Tile tile;
+            switch (tileCode)
+            {
+                case 'X':
+                    tile = new Tile(TileType.Edge);
+                    break;
+                case 'O':
+                    tile = new Tile(TileType.Normal, TileState.Occupied);
+                    break;
+                case 'G':
+                    tile = new Tile(TileType.Goal, TileState.Free);
+                    break;
+                case ' ':
+                    tile = new Tile(TileType.Normal, TileState.Free);
+                    break;
+                default:
+                    throw new ArgumentException("Tiles can only be X, O, G or space character.");
+            }
+            return tile;
         }
     }
 }

@@ -4,78 +4,91 @@ namespace Backtracking
 {
     sealed class Move
     {
-        public readonly Tuple<int,int> Piece;
-        public readonly Direction Direction;
-        readonly Tuple<int, int> _obstacle;
-        readonly Tuple<int, int> _target;
-        readonly Board _board;
-        bool _played = false;
+        readonly Position Start;
+        readonly Direction Direction;
+        readonly Position obstacle;
+        readonly Position target;
+        readonly Board board;
+        bool played = false;
+        const int moveLength = 2;
 
         public bool IsValid
         {
             get
             {
-                return _board.Tiles[Piece.Item1, Piece.Item2].IsPlayable &&
-                    _board.Tiles[_obstacle.Item1, _obstacle.Item2].IsPlayable &&
-                    _board.Tiles[_target.Item1, _target.Item2].IsPlayable &&
-                    _board.Tiles[Piece.Item1, Piece.Item2].IsOccupied &&
-                    _board.Tiles[_obstacle.Item1, _obstacle.Item2].IsOccupied &&
-                    !_board.Tiles[_target.Item1, _target.Item2].IsOccupied;
+                return board.Tiles[Start.Row, Start.Column].IsPlayable &&
+                    board.Tiles[obstacle.Row, obstacle.Column].IsPlayable &&
+                    board.Tiles[target.Row, target.Column].IsPlayable &&
+                    board.Tiles[Start.Row, Start.Column].IsOccupied &&
+                    board.Tiles[obstacle.Row, obstacle.Column].IsOccupied &&
+                    !board.Tiles[target.Row, target.Column].IsOccupied;
             }
         }
 
-        public Move(Board board, Tuple<int, int> piece, Direction direction)
+        public Move(Board board, Position piece, Direction direction)
         {
-            _board = board;
-            Piece = piece;
+            this.board = board;
+            Start = piece;
             Direction = direction;
-            switch (Direction)
+            target = determineTarget(piece, direction);
+            obstacle = determineObstacle(piece, target);
+        }
+
+        private static Position determineObstacle(Position piece, Position target)
+        {
+            return new Position((piece.Row + target.Row) / 2, (piece.Column + target.Column) / 2);
+        }
+
+        private static Position determineTarget(Position piece, Direction direction)
+        {
+            Position target;
+            switch (direction)
             {
                 case Direction.Up:
-                    _target = new Tuple<int, int>(Piece.Item1 - 2, Piece.Item2);
+                    target = new Position(piece.Row - moveLength, piece.Column);
                     break;
                 case Direction.Right:
-                    _target = new Tuple<int, int>(Piece.Item1, Piece.Item2 + 2);
+                    target = new Position(piece.Row, piece.Column + moveLength);
                     break;
                 case Direction.Down:
-                    _target = new Tuple<int, int>(Piece.Item1 + 2, Piece.Item2);
+                    target = new Position(piece.Row + moveLength, piece.Column);
                     break;
                 case Direction.Left:
-                    _target = new Tuple<int, int>(Piece.Item1, Piece.Item2 - 2);
+                    target = new Position(piece.Row, piece.Column - moveLength);
                     break;
                 default:
                     throw new ArgumentException();
             }
-            _obstacle = new Tuple<int, int>((Piece.Item1 + _target.Item1) / 2, (Piece.Item2 + _target.Item2) / 2);
+            return target;
         }
 
         public void Play()
         {
             if (IsValid)
             {
-                _board.Tiles[Piece.Item1, Piece.Item2].RemovePiece();
-                _board.Tiles[_obstacle.Item1, _obstacle.Item2].RemovePiece();
-                _board.Tiles[_target.Item1, _target.Item2].AddPiece();
-                _played = true;
+                board.Tiles[Start.Row, Start.Column].RemovePiece();
+                board.Tiles[obstacle.Row, obstacle.Column].RemovePiece();
+                board.Tiles[target.Row, target.Column].AddPiece();
+                played = true;
             }
         }
 
         public void Undo()
         {
-            if(_played)
+            if(played)
             {
-                _board.Tiles[Piece.Item1, Piece.Item2].AddPiece();
-                _board.Tiles[_obstacle.Item1, _obstacle.Item2].AddPiece();
-                _board.Tiles[_target.Item1, _target.Item2].RemovePiece();
-                _played = false;
+                board.Tiles[Start.Row, Start.Column].AddPiece();
+                board.Tiles[obstacle.Row, obstacle.Column].AddPiece();
+                board.Tiles[target.Row, target.Column].RemovePiece();
+                played = false;
             }
         }
 
         public void Replay(Board board)
         {
-            board.Tiles[Piece.Item1, Piece.Item2].RemovePiece();
-            board.Tiles[_obstacle.Item1, _obstacle.Item2].RemovePiece();
-            board.Tiles[_target.Item1, _target.Item2].AddPiece();
+            board.Tiles[Start.Row, Start.Column].RemovePiece();
+            board.Tiles[obstacle.Row, obstacle.Column].RemovePiece();
+            board.Tiles[target.Row, target.Column].AddPiece();
         }
     }
 }

@@ -8,8 +8,6 @@ namespace Backtracking
 {
     class Board
     {
-        const int defaultBoardSize = 9;
-
         /// <summary>
         /// Default Solitaire board with one goal tile in the center
         /// </summary>
@@ -37,61 +35,59 @@ namespace Backtracking
             "XXXOOOXXX",
             "XXXXXXXXX"
         };
-        /// <summary>
-        /// The tiles of the board in a 2D array
-        /// </summary>
-        public Tile[,] Tiles { get; private set; }
+        const int nDimension = 0;
+        const int mDimension = 1;
+        static readonly Direction[] possibleDirections = (Direction[])Enum.GetValues(typeof(Direction));
 
-        public int PieceCount
-        {
-            get
-            {
-                int count = 0;
-                for (int n = 0; n < Tiles.GetLength(0); n++)
-                {
-                    for (int m = 0; m < Tiles.GetLength(1); m++)
-                    {
-                        if (Tiles[n, m].IsOccupied)
-                        {
-                            count++;
-                        }
-                    }
-                }
-                return count;
-            }
-        }
+        public readonly Tile[,] Tiles;
+
+        public int PieceCount { get { return countOccupiedTiles(); } }
+
+
+        int boardHeight { get { return Tiles.GetLength(nDimension); } }
+        int boardWidth { get { return Tiles.GetLength(mDimension); } }
+
         public bool IsSolved
         {
-            get
-            {
-                bool solved = false;
-                if (_goals.Count == 0 && PieceCount == 1 || PieceCount == _goals.Count)
-                {
-                    solved = true;
-                    foreach (var goal in _goals)
-                    {
-                        if (!Tiles[goal.Item1, goal.Item2].IsOccupied)
-                        {
-                            solved = false;
-                        }
-                    }
-                }
-                return solved;
-            }
+            get { return sameNumberOfPiecesAsGoals && allGoalsOccupied; }
         }
 
-        List<Tuple<int, int>> _goals
+        bool sameNumberOfPiecesAsGoals
         {
             get
             {
-                List<Tuple<int, int>> goals = new List<Tuple<int, int>>();
-                for (int n = 0; n < Tiles.GetLength(0); n++)
+                return goals.Count == 0 && PieceCount == 1 || PieceCount == goals.Count;
+            }
+        }
+
+        bool allGoalsOccupied
+        {
+            get
+            {
+                bool premise = true;
+                foreach (var goal in goals)
                 {
-                    for (int m = 0; m < Tiles.GetLength(1); m++)
+                    if (!Tiles[goal.Row, goal.Column].IsOccupied)
                     {
-                        if (Tiles[n, m].IsGoal)
+                        premise = false;
+                    }
+                }
+                return premise;
+            }
+        }
+
+        List<Position> goals
+        {
+            get
+            {
+                List<Position> goals = new List<Position>();
+                for (int row = 0; row < boardHeight; row++)
+                {
+                    for (int column = 0; column < boardWidth; column++)
+                    {
+                        if (Tiles[row, column].IsGoal)
                         {
-                            goals.Add(new Tuple<int, int>(n, m));
+                            goals.Add(new Position(row, column));
                         }
                     }
                 }
@@ -99,130 +95,123 @@ namespace Backtracking
             }
         }
 
-        public Board()
-        {
-            Tiles = new Tile[defaultBoardSize, defaultBoardSize];
-            for (int n = 0; n < defaultBoardSize; n++)
-            {
-                for (int m = 0; m < defaultBoardSize; m++)
-                {
-                    if (2 < n && n < defaultBoardSize - 3 && 0 < m && m < defaultBoardSize - 1 || 2 < m && m < defaultBoardSize - 3 && 0 < n && n < defaultBoardSize - 1)
-                    {
-                        TileState state;
-                        TileType type = TileType.Normal;
-                        if (n == defaultBoardSize / 2 && m == defaultBoardSize / 2)
-                        {
-                            state = TileState.Free;
-                            type = TileType.Goal;
-                        }
-                        else
-                        {
-                            state = TileState.Occupied;
-                        }
-                        Tiles[n, m] = new Tile(type, state);
-                    }
-                    else
-                    {
-                        Tiles[n, m] = new Tile(TileType.Edge);
-                    }
-                }
-            }
-        }
-
-        private Board(Tile[,] tiles)
+        Board(Tile[,] tiles)
         {
             Tiles = tiles;
         }
 
         public static Board Parse(string[] board)
         {
-            var tiles = new Tile[board.Length, board[0].Length];
-            for (int n = 0; n < board.Length; n++)
-            {
-                for (int m = 0; m < board[n].Length; m++)
-                {
-                    switch (board[n][m].ToString().ToUpper())
-                    {
-                        case "X":
-                            tiles[n, m] = new Tile(TileType.Edge);
-                            break;
-                        case "O":
-                            tiles[n, m] = new Tile(TileType.Normal, TileState.Occupied);
-                            break;
-                        case "G":
-                            tiles[n, m] = new Tile(TileType.Goal, TileState.Free);
-                            break;
-                        case " ":
-                            tiles[n, m] = new Tile(TileType.Normal, TileState.Free);
+            var tiles = tilesFromStringArray(board);
+            return new Board(tiles);
+        }
 
-                            break;
-                        default:
-                            throw new ArgumentException("Tiles can only be X, O, G or space character.");
+        static Tile[,] tilesFromStringArray(string[] board)
+        {
+            var boardHeight = board.Length;
+            var boardWidth = board[0].Length;
+            var tiles = new Tile[boardHeight, boardWidth];
+            for (int row = 0; row < boardHeight; row++)
+            {
+                for (int column = 0; column < boardWidth; column++)
+                {
+                    char tileCode = board[row][column].ToString().ToUpper()[0];
+                    tiles[row, column] = Tile.Parse(tileCode);
+                }
+            }
+            return tiles;
+        }
+        
+        int countOccupiedTiles()
+        {
+            int pieceCount = 0;
+            for (int row = 0; row < boardHeight; row++)
+            {
+                for (int column = 0; column < boardWidth; column++)
+                {
+                    if (Tiles[row, column].IsOccupied)
+                    {
+                        pieceCount++;
                     }
                 }
             }
-            return new Board(tiles);
+            return pieceCount;
         }
 
         public List<Move> Solve(Action<Board> moveCallback = null, Action<Board> backtrackCallback = null)
         {
-            var moves = new Stack<Move>(PieceCount - 1);
-            Solve(moves, moveCallback);
-            if (!IsSolved)
+            var moveTrace = new Stack<Move>(maxMovesCount);
+            var solved = Solve(moveTrace, moveCallback, backtrackCallback);
+            if (!solved)
             {
                 throw new BoardNotSolvableException();
             }
-            return moves.Reverse().ToList();
+            return moveTrace.Reverse().ToList();
         }
 
-        void Solve(Stack<Move> moves, Action<Board> moveCallback = null, Action<Board> backtrackCallback = null)
+        bool Solve(Stack<Move> moveTrace, Action<Board> moveCallback, Action<Board> backtrackCallback)
         {
             bool solved = IsSolved;
-            var directions = Enum.GetValues(typeof(Direction));
-            for (int i = 0; i < Tiles.GetLength(0) && !solved; i++)
+            int row = 0;
+            while (row < boardHeight && !solved)
             {
-                for (int j = 0; j < Tiles.GetLength(1) && !solved; j++)
+                int column = 0;
+                while (column < boardWidth && !solved)
                 {
-                    foreach (Direction direction in directions)
+                    foreach (Direction direction in possibleDirections)
                     {
-                        var move = new Move(this, new Tuple<int, int>(i, j), direction);
+                        var move = new Move(this, new Position(row, column), direction);
                         if (move.IsValid)
                         {
-                            move.Play();
-                            moves.Push(move);
-                            if (moveCallback != null)
-                            {
-                                moveCallback.Invoke(this);
-                            }
-                            Solve(moves, moveCallback, backtrackCallback);
-                            solved = IsSolved;
+                            playMove(move, moveTrace, moveCallback);
+                            solved = Solve(moveTrace, moveCallback, backtrackCallback);
                             if (!solved)
                             {
-                                move.Undo();
-                                moves.Pop();
-                                if (backtrackCallback != null) 
-                                {
-                                    backtrackCallback.Invoke(this);
-                                }
+                                undoLastMove(moveTrace, backtrackCallback);
                             }
                         }
                     }
+                    column++;
                 }
+                row++;
+            }
+            return solved;
+        }
+
+        void playMove(Move move, Stack<Move> moveTrace, Action<Board> moveCallback)
+        {
+            move.Play();
+            moveTrace.Push(move);
+            if (moveCallback != null)
+            {
+                moveCallback.Invoke(this);
+            }
+        }
+
+        void undoLastMove(Stack<Move> moveTrace, Action<Board> backtrackCallback)
+        {
+            var lastMove = moveTrace.Pop();
+            lastMove.Undo();
+            if (backtrackCallback != null)
+            {
+                backtrackCallback.Invoke(this);
             }
         }
 
         public override string ToString()
         {
             string output = String.Empty;
-            for (int n = 0; n < Tiles.GetLength(0); n++)
+            for (int row = 0; row < boardHeight; row++)
             {
-                for (int m = 0; m < Tiles.GetLength(1); m++)
+                for (int column = 0; column < boardWidth; column++)
                 {
-                    output += Tiles[n, m];
+                    output += Tiles[row, column];
                 }
                 output += Environment.NewLine;
             }
             return output;
         }
+
+        int maxMovesCount { get { return PieceCount - 1; } }
     }
 }
