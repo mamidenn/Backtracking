@@ -52,14 +52,14 @@ namespace BacktrackingTest
             tile.AddPiece();
         }
         [TestMethod]
-        [ExpectedException(typeof(TileIsOccupiedException))]
+        [ExpectedException(typeof(TileOccupationException))]
         public void CannotAddPieceToOccupied()
         {
             var tile = new Tile(TileType.Normal, TileState.Occupied);
             tile.AddPiece();
         }
         [TestMethod]
-        [ExpectedException(typeof(TileIsNotOccupiedException))]
+        [ExpectedException(typeof(TileOccupationException))]
         public void CannotRemovePieceFromFree()
         {
             var tile = new Tile(TileType.Normal);

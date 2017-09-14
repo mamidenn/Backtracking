@@ -8,6 +8,10 @@ namespace Backtracking
         TileType type;
         TileState state;
 
+        const string edgeSymbol = "░";
+        const string occupiedSymbol = "O";
+        const string freeSymbol = " ";
+
         public bool IsOccupied { get { return IsPlayable && state == TileState.Occupied; } }
         public bool IsPlayable { get { return type == TileType.Normal || type == TileType.Goal; } }
         public bool IsGoal { get { return type == TileType.Goal; } }
@@ -28,21 +32,11 @@ namespace Backtracking
             switch (type)
             {
                 case TileType.Edge:
-                    output = "░";
+                    output = edgeSymbol;
                     break;
                 case TileType.Normal:
                 case TileType.Goal:
-                    switch (state)
-                    {
-                        case TileState.Free:
-                            output = " ";
-                            break;
-                        case TileState.Occupied:
-                            output = "o";
-                            break;
-                        default:
-                            throw new KeyNotFoundException();
-                    }
+                    output = stateToString(state);
                     break;
                 default:
                     throw new KeyNotFoundException();
@@ -50,30 +44,33 @@ namespace Backtracking
             return output;
         }
 
+        private static string stateToString(TileState state)
+        {
+            return state == TileState.Occupied ? occupiedSymbol : freeSymbol;
+        }
+
         public void RemovePiece()
         {
-            if (!IsPlayable)
-            {
-                throw new TileIsNotPlayableException();
-            }
-            if (!IsOccupied)
-            {
-                throw new TileIsNotOccupiedException();
-            }
+            failOnTileState(TileState.Free);
             state = TileState.Free;
         }
 
         public void AddPiece()
         {
+            failOnTileState(TileState.Occupied);
+            state = TileState.Occupied;
+        }
+
+        void failOnTileState(TileState failState)
+        {
             if (!IsPlayable)
             {
                 throw new TileIsNotPlayableException();
             }
-            if (IsOccupied)
+            if (state == failState)
             {
-                throw new TileIsOccupiedException();
+                throw new TileOccupationException();
             }
-            state = TileState.Occupied;
         }
 
         public static Tile Parse(char tileCode)

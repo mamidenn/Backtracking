@@ -60,9 +60,8 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Tile.cs" />
     <Compile Include="TileException.cs" />
-    <Compile Include="TileIsFreeException.cs" />
     <Compile Include="TileIsNotPlayableException.cs" />
-    <Compile Include="TileIsOccupiedException.cs" />
+    <Compile Include="TileOccupationException.cs" />
     <Compile Include="TileState.cs" />
     <Compile Include="TileType.cs" />
   </ItemGroup>
