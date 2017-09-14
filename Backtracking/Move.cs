@@ -16,12 +16,17 @@ namespace Backtracking
         {
             get
             {
-                return start.IsPlayable
-                    && obstacle.IsPlayable
-                    && target.IsPlayable
-                    && start.IsOccupied
-                    && obstacle.IsOccupied
-                    && !target.IsOccupied;
+                bool isValid = false;
+                if (start != null && obstacle != null && target != null)
+                {
+                    isValid = start.IsPlayable
+                        && obstacle.IsPlayable
+                        && target.IsPlayable
+                        && start.IsOccupied
+                        && obstacle.IsOccupied
+                        && !target.IsOccupied;
+                }
+                return isValid;
             }
         }
 
