@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Backtracking
 {
-    struct Position
+    public struct Position
     {
         public readonly int Row;
         public readonly int Column;

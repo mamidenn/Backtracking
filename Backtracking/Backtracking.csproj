@@ -61,6 +61,7 @@
     <Compile Include="Tile.cs" />
     <Compile Include="TileException.cs" />
     <Compile Include="TileIsNotPlayableException.cs" />
+    <Compile Include="TileNotOnBoardException.cs" />
     <Compile Include="TileOccupationException.cs" />
     <Compile Include="TileState.cs" />
     <Compile Include="TileType.cs" />

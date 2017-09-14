@@ -1,6 +1,6 @@
 ﻿namespace Backtracking
 {
-    enum Direction
+    public enum Direction
     {
         Right,
         Left,

@@ -6,7 +6,7 @@ using System.Threading;
 
 namespace Backtracking
 {
-    class Board
+    public class Board
     {
         /// <summary>
         /// Default Solitaire board with one goal tile in the center
@@ -44,8 +44,8 @@ namespace Backtracking
         public int PieceCount { get { return countOccupiedTiles(); } }
 
 
-        int boardHeight { get { return Tiles.GetLength(nDimension); } }
-        int boardWidth { get { return Tiles.GetLength(mDimension); } }
+        public int Height { get { return Tiles.GetLength(nDimension); } }
+        public int Width { get { return Tiles.GetLength(mDimension); } }
 
         public bool IsSolved
         {
@@ -81,9 +81,9 @@ namespace Backtracking
             get
             {
                 List<Position> goals = new List<Position>();
-                for (int row = 0; row < boardHeight; row++)
+                for (int row = 0; row < Height; row++)
                 {
-                    for (int column = 0; column < boardWidth; column++)
+                    for (int column = 0; column < Width; column++)
                     {
                         if (Tiles[row, column].IsGoal)
                         {
@@ -125,9 +125,9 @@ namespace Backtracking
         int countOccupiedTiles()
         {
             int pieceCount = 0;
-            for (int row = 0; row < boardHeight; row++)
+            for (int row = 0; row < Height; row++)
             {
-                for (int column = 0; column < boardWidth; column++)
+                for (int column = 0; column < Width; column++)
                 {
                     if (Tiles[row, column].IsOccupied)
                     {
@@ -153,10 +153,10 @@ namespace Backtracking
         {
             bool solved = IsSolved;
             int row = 0;
-            while (row < boardHeight && !solved)
+            while (row < Height && !solved)
             {
                 int column = 0;
-                while (column < boardWidth && !solved)
+                while (column < Width && !solved)
                 {
                     foreach (Direction direction in possibleDirections)
                     {
@@ -201,9 +201,9 @@ namespace Backtracking
         public override string ToString()
         {
             string output = String.Empty;
-            for (int row = 0; row < boardHeight; row++)
+            for (int row = 0; row < Height; row++)
             {
-                for (int column = 0; column < boardWidth; column++)
+                for (int column = 0; column < Width; column++)
                 {
                     output += Tiles[row, column];
                 }
@@ -213,5 +213,20 @@ namespace Backtracking
         }
 
         int maxMovesCount { get { return PieceCount - 1; } }
+
+        internal Position GetPosition(Tile tile)
+        {
+            for (int row = 0; row < Height; row++)
+            {
+                for (int column = 0; column < Width; column++)
+                {
+                    if (tile == Tiles[row, column])
+                    {
+                        return new Position(row, column);
+                    }
+                }
+            }
+            throw new TileNotOnBoardException();
+        }
     }
 }

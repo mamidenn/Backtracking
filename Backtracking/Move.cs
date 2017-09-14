@@ -2,12 +2,12 @@
 
 namespace Backtracking
 {
-    sealed class Move
+    public class Move
     {
-        readonly Position Start;
-        readonly Direction Direction;
-        readonly Position obstacle;
-        readonly Position target;
+        readonly Tile start;
+        readonly Direction direction;
+        readonly Tile obstacle;
+        readonly Tile target;
         readonly Board board;
         bool played = false;
         const int moveLength = 2;
@@ -16,30 +16,46 @@ namespace Backtracking
         {
             get
             {
-                return board.Tiles[Start.Row, Start.Column].IsPlayable &&
-                    board.Tiles[obstacle.Row, obstacle.Column].IsPlayable &&
-                    board.Tiles[target.Row, target.Column].IsPlayable &&
-                    board.Tiles[Start.Row, Start.Column].IsOccupied &&
-                    board.Tiles[obstacle.Row, obstacle.Column].IsOccupied &&
-                    !board.Tiles[target.Row, target.Column].IsOccupied;
+                return start.IsPlayable
+                    && obstacle.IsPlayable
+                    && target.IsPlayable
+                    && start.IsOccupied
+                    && obstacle.IsOccupied
+                    && !target.IsOccupied;
             }
         }
 
         public Move(Board board, Position piece, Direction direction)
         {
             this.board = board;
-            Start = piece;
-            Direction = direction;
-            target = determineTarget(piece, direction);
-            obstacle = determineObstacle(piece, target);
+            this.direction = direction;
+
+            start = board.Tiles[piece.Row, piece.Column];
+            
+            Position targetPosition = determineTargetPosition(piece, direction);            
+            Position obstaclePosition = determineObstaclePosition(piece, targetPosition);
+            if (isOnBoard(board, obstaclePosition))
+            {
+                obstacle = board.Tiles[obstaclePosition.Row, obstaclePosition.Column];
+            }
+            if (isOnBoard(board, targetPosition))
+            {
+                target = board.Tiles[targetPosition.Row, targetPosition.Column];
+            }
         }
 
-        private static Position determineObstacle(Position piece, Position target)
+        private static bool isOnBoard(Board board, Position position)
+        {
+            return 0 <= position.Row && position.Row < board.Height
+                && 0 <= position.Column && position.Column < board.Width;
+        }
+
+        private static Position determineObstaclePosition(Position piece, Position target)
         {
             return new Position((piece.Row + target.Row) / 2, (piece.Column + target.Column) / 2);
         }
 
-        private static Position determineTarget(Position piece, Direction direction)
+        private static Position determineTargetPosition(Position piece, Direction direction)
         {
             Position target;
             switch (direction)
@@ -66,9 +82,9 @@ namespace Backtracking
         {
             if (IsValid)
             {
-                board.Tiles[Start.Row, Start.Column].RemovePiece();
-                board.Tiles[obstacle.Row, obstacle.Column].RemovePiece();
-                board.Tiles[target.Row, target.Column].AddPiece();
+                start.RemovePiece();
+                obstacle.RemovePiece();
+                target.AddPiece();
                 played = true;
             }
         }
@@ -77,16 +93,19 @@ namespace Backtracking
         {
             if(played)
             {
-                board.Tiles[Start.Row, Start.Column].AddPiece();
-                board.Tiles[obstacle.Row, obstacle.Column].AddPiece();
-                board.Tiles[target.Row, target.Column].RemovePiece();
+                start.AddPiece();
+                obstacle.AddPiece();
+                target.RemovePiece();
                 played = false;
             }
         }
 
         public void Replay(Board board)
         {
-            board.Tiles[Start.Row, Start.Column].RemovePiece();
+            Position start = this.board.GetPosition(this.start);
+            Position obstacle = this.board.GetPosition(this.obstacle);
+            Position target = this.board.GetPosition(this.target);
+            board.Tiles[start.Row, start.Column].RemovePiece();
             board.Tiles[obstacle.Row, obstacle.Column].RemovePiece();
             board.Tiles[target.Row, target.Column].AddPiece();
         }
