@@ -79,5 +79,37 @@ namespace BacktrackingTest
             tile.RemovePiece();
             Assert.IsFalse(tile.IsOccupied);
         }
+        [TestMethod]
+        public void ParseXMakesNotPlayable()
+        {
+            var tile = Tile.Parse('X');
+            Assert.IsFalse(tile.IsPlayable);
+        }
+        [TestMethod]
+        public void ParseGMakesGoal()
+        {
+            var tile = Tile.Parse('G');
+            Assert.IsTrue(tile.IsGoal);
+        }
+        [TestMethod]
+        public void ParseOMakesPlayableAndOccupied()
+        {
+            var tile = Tile.Parse('O');
+            Assert.IsTrue(tile.IsPlayable);
+            Assert.IsTrue(tile.IsOccupied);
+        }
+        [TestMethod]
+        public void ParseSpaceMakesPlayableAndNotOccupied()
+        {
+            var tile = Tile.Parse(' ');
+            Assert.IsTrue(tile.IsPlayable);
+            Assert.IsFalse(tile.IsOccupied);
+        }
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
+        public void ParseAThrowsException()
+        {
+            Tile.Parse('A');
+        }
     }
 }
