@@ -17,7 +17,7 @@ namespace Backtracking
             get
             {
                 bool isValid = false;
-                if (start != null && obstacle != null && target != null)
+                if (allTilesDefined)
                 {
                     isValid = start.IsPlayable
                         && obstacle.IsPlayable
@@ -30,22 +30,27 @@ namespace Backtracking
             }
         }
 
+        private bool allTilesDefined
+        {
+            get { return start != null && obstacle != null && target != null; }
+        }
+
         public Move(Board board, Position piece, Direction direction)
         {
             this.board = board;
             this.direction = direction;
 
-            start = board.Tiles[piece.Row, piece.Column];
+            start = board.AtPosition(piece);
             
             Position targetPosition = determineTargetPosition(piece, direction);            
             Position obstaclePosition = determineObstaclePosition(piece, targetPosition);
             if (isOnBoard(board, obstaclePosition))
             {
-                obstacle = board.Tiles[obstaclePosition.Row, obstaclePosition.Column];
+                obstacle = board.AtPosition(obstaclePosition);
             }
             if (isOnBoard(board, targetPosition))
             {
-                target = board.Tiles[targetPosition.Row, targetPosition.Column];
+                target = board.AtPosition(targetPosition);
             }
         }
 
@@ -110,9 +115,9 @@ namespace Backtracking
             Position start = this.board.GetPosition(this.start);
             Position obstacle = this.board.GetPosition(this.obstacle);
             Position target = this.board.GetPosition(this.target);
-            board.Tiles[start.Row, start.Column].RemovePiece();
-            board.Tiles[obstacle.Row, obstacle.Column].RemovePiece();
-            board.Tiles[target.Row, target.Column].AddPiece();
+            board.AtPosition(start).RemovePiece();
+            board.AtPosition(obstacle).RemovePiece();
+            board.AtPosition(target).AddPiece();
         }
     }
 }

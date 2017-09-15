@@ -15,14 +15,14 @@ namespace BacktrackingTest
                 " O"
             };
             var board = Board.Parse(boardCast);
-            Assert.IsFalse(board.Tiles[0, 0].IsPlayable);
-            Assert.IsTrue(board.Tiles[0, 1].IsPlayable);
-            Assert.IsTrue(board.Tiles[0, 1].IsGoal);
-            Assert.IsFalse(board.Tiles[0, 1].IsOccupied);
-            Assert.IsTrue(board.Tiles[1, 0].IsPlayable);
-            Assert.IsFalse(board.Tiles[1, 0].IsOccupied);
-            Assert.IsTrue(board.Tiles[1, 1].IsPlayable);
-            Assert.IsTrue(board.Tiles[1, 1].IsOccupied);
+            Assert.IsFalse(board[0, 0].IsPlayable);
+            Assert.IsTrue(board[0, 1].IsPlayable);
+            Assert.IsTrue(board[0, 1].IsGoal);
+            Assert.IsFalse(board[0, 1].IsOccupied);
+            Assert.IsTrue(board[1, 0].IsPlayable);
+            Assert.IsFalse(board[1, 0].IsOccupied);
+            Assert.IsTrue(board[1, 1].IsPlayable);
+            Assert.IsTrue(board[1, 1].IsOccupied);
         }
         [TestMethod]
         public void SolveSimpleBoard()
@@ -33,12 +33,12 @@ namespace BacktrackingTest
             Assert.IsTrue(board.IsSolved);
         }
         [TestMethod]
-        [ExpectedException(typeof(BoardNotSolvableException))]
         public void BoardNotSolvable()
         {
             string[] boardCast = new[] { "OOO " };
             var board = Board.Parse(boardCast);
             board.Solve();
+            Assert.IsFalse(board.IsSolved);
         }
     }
 }

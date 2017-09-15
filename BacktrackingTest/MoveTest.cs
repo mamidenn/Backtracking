@@ -43,21 +43,21 @@ namespace BacktrackingTest
         {
             var move = new Move(board, new Position(1, 1), Direction.Right);
             move.Play();
-            Assert.IsFalse(board.Tiles[1, 1].IsOccupied);
+            Assert.IsFalse(board[1, 1].IsOccupied);
         }
         [TestMethod]
         public void MoveRemovesObstacle()
         {
             var move = new Move(board, new Position(1, 1), Direction.Right);
             move.Play();
-            Assert.IsFalse(board.Tiles[1, 2].IsOccupied);
+            Assert.IsFalse(board[1, 2].IsOccupied);
         }
         [TestMethod]
         public void MoveAddsPiece()
         {
             var move = new Move(board, new Position(1, 1), Direction.Right);
             move.Play();
-            Assert.IsTrue(board.Tiles[1, 3].IsOccupied);
+            Assert.IsTrue(board[1, 3].IsOccupied);
         }
     }
 }

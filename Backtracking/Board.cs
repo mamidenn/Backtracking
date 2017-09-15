@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-using System.Threading;
 
 namespace Backtracking
 {
@@ -38,18 +36,35 @@ namespace Backtracking
         const int nDimension = 0;
         const int mDimension = 1;
         static readonly Direction[] possibleDirections = (Direction[])Enum.GetValues(typeof(Direction));
+        readonly Stack<Move> moveTrace = new Stack<Move>();
+        public List<Move> MoveTrace
+        {
+            get
+            {
+                return moveTrace.Reverse().ToList();
+            }
+        }
 
-        public readonly Tile[,] Tiles;
+        readonly Tile[,] tiles;
 
         public int PieceCount { get { return countOccupiedTiles(); } }
 
-
-        public int Height { get { return Tiles.GetLength(nDimension); } }
-        public int Width { get { return Tiles.GetLength(mDimension); } }
+        public int Height { get { return tiles.GetLength(nDimension); } }
+        public int Width { get { return tiles.GetLength(mDimension); } }
 
         public bool IsSolved
         {
             get { return sameNumberOfPiecesAsGoals && allGoalsOccupied; }
+        }
+
+        public Tile this[int row, int column]
+        {
+            get { return tiles[row, column]; }
+        }
+
+        public Tile AtPosition(Position position)
+        {
+            return tiles[position.Row, position.Column];
         }
 
         bool sameNumberOfPiecesAsGoals
@@ -67,7 +82,7 @@ namespace Backtracking
                 bool premise = true;
                 foreach (var goal in goals)
                 {
-                    if (!Tiles[goal.Row, goal.Column].IsOccupied)
+                    if (!this.AtPosition(goal).IsOccupied)
                     {
                         premise = false;
                     }
@@ -85,7 +100,7 @@ namespace Backtracking
                 {
                     for (int column = 0; column < Width; column++)
                     {
-                        if (Tiles[row, column].IsGoal)
+                        if (tiles[row, column].IsGoal)
                         {
                             goals.Add(new Position(row, column));
                         }
@@ -97,7 +112,7 @@ namespace Backtracking
 
         Board(Tile[,] tiles)
         {
-            Tiles = tiles;
+            this.tiles = tiles;
         }
 
         public static Board Parse(string[] board)
@@ -129,7 +144,7 @@ namespace Backtracking
             {
                 for (int column = 0; column < Width; column++)
                 {
-                    if (Tiles[row, column].IsOccupied)
+                    if (tiles[row, column].IsOccupied)
                     {
                         pieceCount++;
                     }
@@ -138,18 +153,7 @@ namespace Backtracking
             return pieceCount;
         }
 
-        public List<Move> Solve(Action<Board> moveCallback = null, Action<Board> backtrackCallback = null)
-        {
-            var moveTrace = new Stack<Move>(maxMovesCount);
-            var solved = Solve(moveTrace, moveCallback, backtrackCallback);
-            if (!solved)
-            {
-                throw new BoardNotSolvableException();
-            }
-            return moveTrace.Reverse().ToList();
-        }
-
-        bool Solve(Stack<Move> moveTrace, Action<Board> moveCallback, Action<Board> backtrackCallback)
+        public bool Solve(Action<Board> moveCallback = null, Action<Board> backtrackCallback = null)
         {
             bool solved = IsSolved;
             int row = 0;
@@ -163,11 +167,11 @@ namespace Backtracking
                         var move = new Move(this, new Position(row, column), direction);
                         if (move.IsValid)
                         {
-                            playMove(move, moveTrace, moveCallback);
-                            solved = Solve(moveTrace, moveCallback, backtrackCallback);
+                            playMove(move, moveCallback);
+                            solved = Solve(moveCallback, backtrackCallback);
                             if (!solved)
                             {
-                                undoLastMove(moveTrace, backtrackCallback);
+                                undoLastMove(backtrackCallback);
                             }
                         }
                     }
@@ -178,7 +182,7 @@ namespace Backtracking
             return solved;
         }
 
-        void playMove(Move move, Stack<Move> moveTrace, Action<Board> moveCallback)
+        void playMove(Move move, Action<Board> moveCallback)
         {
             move.Play();
             moveTrace.Push(move);
@@ -188,7 +192,7 @@ namespace Backtracking
             }
         }
 
-        void undoLastMove(Stack<Move> moveTrace, Action<Board> backtrackCallback)
+        void undoLastMove(Action<Board> backtrackCallback)
         {
             var lastMove = moveTrace.Pop();
             lastMove.Undo();
@@ -205,7 +209,7 @@ namespace Backtracking
             {
                 for (int column = 0; column < Width; column++)
                 {
-                    output += Tiles[row, column];
+                    output += tiles[row, column];
                 }
                 output += Environment.NewLine;
             }
@@ -220,7 +224,7 @@ namespace Backtracking
             {
                 for (int column = 0; column < Width; column++)
                 {
-                    if (tile == Tiles[row, column])
+                    if (tile == tiles[row, column])
                     {
                         return new Position(row, column);
                     }

@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace Backtracking
+﻿namespace Backtracking
 {
     public struct Position
     {
@@ -13,10 +8,6 @@ namespace Backtracking
         {
             Row = row;
             Column = column;
-        }
-        public static Position operator +(Position a, Position b)
-        {
-            return new Position(a.Row + b.Row, a.Column + b.Column);
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Threading;
 
@@ -24,25 +25,22 @@ namespace Backtracking
                 Console.SetCursorPosition(11, 1);
                 Console.Write("Moves tried: {0}", movesCount);
             };
-            try
+            bool solved = board.Solve(moveCallback);
+            if (solved)
             {
-                List<Move> moves = board.Solve(moveCallback);
+                List<Move> solvingMoves = board.MoveTrace;
                 board = Board.Parse(boardString);
                 Console.Clear();
                 Console.Write(board);
                 Console.SetCursorPosition(11, 1);
                 Console.Write("Moves tried: {0}", movesCount++);
-                foreach (var move in moves)
+                foreach (var move in solvingMoves)
                 {
                     Thread.Sleep(TimeSpan.FromSeconds(0.25));
                     move.Replay(board);
                     Console.SetCursorPosition(0, 0);
                     Console.Write(board);
                 }
-            }
-            catch (BoardNotSolvableException)
-            {
-                Console.WriteLine("Board can't be solved.");
             }
             Console.ReadLine();
         }
